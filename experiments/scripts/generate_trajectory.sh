@@ -24,5 +24,5 @@ STARTING_LEVEL=$((SLURM_ARRAY_TASK_ID * LEVELS_PER_TASK))
 
 # Run the training script
 pyenv activate drc-planning
-python sokoban_experiments/create_trajectory_dataset.py --starting_level $STARTING_LEVEL --num_levels $LEVELS_PER_TASK
+python vit_bc/create_trajectory_dataset.py --starting_level $STARTING_LEVEL --num_levels $LEVELS_PER_TASK
 pyenv deactivate
