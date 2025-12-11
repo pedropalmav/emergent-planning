@@ -1,0 +1,33 @@
+[project]
+name = "thinker"
+version = "0.1.0"
+description = "Thinker"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pydantic<2",
+    "numpy>=1.2",
+    "opencv-python",
+    "gym==0.22.0",
+    "gym[accept-rom-license]==0.22.0",
+    "grpcio>=1.60.0",
+    "ray[default]>=2.1.0",
+    "matplotlib>=3.0.0",
+    "GitPython>=3.0.0",
+    "wandb>=0.14",
+    "moviepy>=1.0.0",
+    "torch>=1.13.0",
+    "torchvision",
+    "torchaudio"
+]
+
+[build-system]
+requires = [
+    "setuptools>=64",
+    "wheel",
+    "numpy>=1.2",
+    "cython",
+    "gym==0.22.0"
+]
+build-backend = "setuptools.build_meta"
+

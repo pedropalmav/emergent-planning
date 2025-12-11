@@ -1,0 +1,22 @@
+[project]
+name = "emergent-planning"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "gym-sokoban",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.8.0",
+    "thinker",
+]
+
+[tool.uv.workspace]
+members = [
+    "sokoban",
+    "thinker",
+]
+
+[tool.uv.sources]
+gym-sokoban = { workspace = true, editable = true }
+thinker = { workspace = true, editable = true }

@@ -1,9 +1,20 @@
+[project]
+name = "gym-sokoban"
+version = "0.1.0"
+description = "Sokoban environment for OpenAI Gym"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "gym==0.22.0"
+]
+
 [build-system]
 requires = [
     "setuptools>=64",
     "wheel",
-    "numpy",
-    "cython"
+    "numpy>=1.2",
+    "cython",
+    "gym==0.22.0"
 ]
 build-backend = "setuptools.build_meta"
 
