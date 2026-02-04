@@ -556,7 +556,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_name",
         type=str,
-        default="vit_1772",
+        default="vit_6042",
         help="name of agent checkpoint on which to run experiments",
     )
     parser.add_argument(
@@ -597,10 +597,10 @@ if __name__ == "__main__":
     net = ViTBC(
         image_size=8,
         patch_size=1,
-        num_layers=5,
+        num_layers=7,
         num_heads=8,
-        hidden_dim=64,
-        mlp_dim=128,
+        hidden_dim=256,
+        mlp_dim=256 * 4,
         image_channels=7,
         num_classes=5,
     )

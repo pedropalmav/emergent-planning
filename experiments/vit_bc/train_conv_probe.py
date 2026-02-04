@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.utils
 import torch.utils.data
-from create_probe_dataset import ProbingDataset, ProbingDatasetCleaned
+from utils import ProbingDataset, ProbingDatasetCleaned
 from typing import Optional
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_name",
         type=str,
-        default="vit_1772",
+        default="vit_6042",
         help="name of agent checkpoint on which to train probes",
     )
     parser.add_argument(
@@ -102,13 +102,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num_layers",
         type=int,
-        default=5,
+        default=7,
         help="number of transformer layers the agent has",
     )
     parser.add_argument(
         "--channels",
         type=int,
-        default=32,
+        default=256,
         help="number of channels in the agent's transformer layers",
     )
     parser.add_argument("--resnet", action="store_true")
@@ -117,6 +117,7 @@ if __name__ == "__main__":
     channels = list(range(args.channels))
     batch_size = 16
 
+    # TODO: get padding function
     if args.kernel == 1:
         padding = 0
     elif args.kernel == 3:
@@ -128,6 +129,7 @@ if __name__ == "__main__":
     else:
         raise ValueError("Kernel size not supported")
 
+    # TODO: get device function
     if torch.cuda.is_available():
         device = torch.device("cuda")
     else:
@@ -139,6 +141,7 @@ if __name__ == "__main__":
 
     results = {}
 
+    # TODO: load datasets function
     train_dataset_c = torch.load(
         f"./data/train_data_full_{args.model_name}.pt",
         weights_only=False,
@@ -148,6 +151,7 @@ if __name__ == "__main__":
         weights_only=False,
     )
 
+    # TODO: clean datasets function
     cleaned_train_data, cleaned_test_data = [], []
     for trans in train_dataset_c.data:
         if type(trans[args.feature]) == int:
@@ -164,20 +168,22 @@ if __name__ == "__main__":
     train_dataset_c.data = cleaned_train_data
     test_dataset_c.data = cleaned_test_data
     out_dim = 1 + max([c[args.feature].max().item() for c in train_dataset_c.data])
+
+    # TODO: Move this out of the seed loop
+    cleaned_train_data = [
+        (trans["hidden_states"].cpu(), trans["board_state"], trans[args.feature])
+        for trans in train_dataset_c.data
+    ]
+    cleaned_test_data = [
+        (trans["hidden_states"].cpu(), trans["board_state"], trans[args.feature])
+        for trans in test_dataset_c.data
+    ]
+    train_dataset = ProbingDatasetCleaned(cleaned_train_data)
+    test_dataset = ProbingDatasetCleaned(cleaned_test_data)
+
     for seed in range(args.num_seeds):
         print(f"=============== Seed: {seed} ================")
         torch.manual_seed(seed)
-
-        cleaned_train_data = [
-            (trans["hidden_states"].cpu(), trans["board_state"], trans[args.feature])
-            for trans in train_dataset_c.data
-        ]
-        cleaned_test_data = [
-            (trans["hidden_states"].cpu(), trans["board_state"], trans[args.feature])
-            for trans in test_dataset_c.data
-        ]
-        train_dataset = ProbingDatasetCleaned(cleaned_train_data)
-        test_dataset = ProbingDatasetCleaned(cleaned_test_data)
 
         for layer_name, layer_idx in layers:
 
@@ -201,14 +207,15 @@ if __name__ == "__main__":
 
             if args.convprobe_off:
                 probe = ConvProbe(
-                    in_channels=7 if layer_name == "x" else 32,
+                    in_channels=7 if layer_name == "x" else args.channels,
                     out_dim=out_dim,
                     kernel_size=args.kernel,
                     padding=(0 if args.kernel == 1 else 1),
                 )
             else:
                 probe = LinProbe(
-                    in_channels=7 if layer_name == "x" else 32, out_dim=out_dim
+                    in_channels=7 if layer_name == "x" else args.channels,
+                    out_dim=out_dim,
                 )
             probe.to(device)
             optimiser = torch.optim.AdamW(
@@ -279,6 +286,7 @@ if __name__ == "__main__":
             results_dict["Avg_F1"] = f1
             results[f"{layer_name}_hidden_states"] = results_dict
 
+            # TODO: make results dirs
             if not os.path.exists("./results"):
                 os.mkdir("./results")
             if not os.path.exists("./results/convprobe_results"):
