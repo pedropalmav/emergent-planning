@@ -5,18 +5,18 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
-#SBATCH --mem-per-cpu=10G
+#SBATCH --mem=80G
 #SBATCH --gpus=1
 #SBATCH --partition=ialab
-#SBATCH --exclude=ahsoka,antuco
+#SBATCH --exclude=ahsoka,antuco,scylla
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=pedro.palma@uc.cl
 #SBATCH --chdir=/home/pedropalmav/archive/emergent-planning/experiments/vit_bc
 #SBATCH --export=ALL
 
 
-# Run the training script
-uv run train_conv_probe.py --feature "tracked_box_next_push_onto_with" --kernel 3 --num_epochs 10
+# uv run train_conv_probe.py --feature "agent_onto_after" --kernel 3 --num_epochs 10 --model_name resnet_172 --num_layers 24 --channels 32
+uv run train_conv_probe.py --feature "tracked_box_next_push_onto_with" --kernel 3 --num_epochs 10 --model_name resnet_172 --num_layers 24 --channels 32
 
 duration=$SECONDS
 days=$((duration / 86400))

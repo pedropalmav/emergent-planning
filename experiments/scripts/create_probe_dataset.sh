@@ -16,9 +16,14 @@
 #SBATCH --export=ALL
 
 
-# Run the training script
-uv run create_probe_dataset.py --num_episodes 3000 --name train
-uv run create_probe_dataset.py --num_episodes 1000 --name test --env_name "valid-"
+# ViT
+# uv run create_probe_dataset.py --num_episodes 3000 --name train
+# uv run create_probe_dataset.py --num_episodes 1000 --name test --env_name "valid-"
+
+# ResNet
+uv run create_probe_dataset.py --num_episodes 3000 --name train --model_name resnet_172
+uv run create_probe_dataset.py --num_episodes 1000 --name test --env_name "valid-" --model_name resnet_172
+
 
 duration=$SECONDS
 days=$((duration / 86400))

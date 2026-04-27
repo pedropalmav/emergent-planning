@@ -4,7 +4,8 @@ sys.path.append("/home/tom/mlmi/project/testrepo/sokoban")
 from thinker.main import make, Env
 import thinker
 from vit import ViTBC
-from extractor import ViTEmbeddingExtractor
+from resnet import ResNetBC
+from embeddings_extractors import ViTEmbeddingExtractor, ResNetEmbeddingExtractor
 from torch.utils.data.dataset import Dataset
 import torch
 from torch.nn.functional import relu
@@ -594,16 +595,28 @@ if __name__ == "__main__":
     flags.mini_unqtar = False
     flags.mini_unqbox = False
 
-    net = ViTBC(
-        image_size=8,
-        patch_size=1,
-        num_layers=7,
-        num_heads=8,
-        hidden_dim=256,
-        mlp_dim=256 * 4,
-        image_channels=7,
-        num_classes=5,
-    )
+    model_name = args.model_name.split("_")[0]
+    if model_name == "vit":
+        net = ViTBC(
+            image_size=8,
+            patch_size=1,
+            num_layers=7,
+            num_heads=8,
+            hidden_dim=256,
+            mlp_dim=256 * 4,
+            image_channels=7,
+            num_classes=5,
+        )
+    elif model_name == "resnet":
+        net = ResNetBC(
+            image_size=8,
+            kernel_size=3,
+            num_layers=24,
+            hidden_dim=32,
+            mlp_dim=256,
+            num_classes=5,
+            image_channels=7,
+        )
 
     ckp_path = "../../checkpoints/sokoban"
     ckp_path = os.path.join(util.full_path(ckp_path), f"{args.model_name}.pth")
@@ -624,7 +637,10 @@ if __name__ == "__main__":
     ckp = torch.load(ckp_path, map_location=env.device, weights_only=False)
     net.load_state_dict(ckp, strict=False)
 
-    model = ViTEmbeddingExtractor(net)
+    if model_name == "vit":
+        model = ViTEmbeddingExtractor(net)
+    elif model_name == "resnet":
+        model = ResNetEmbeddingExtractor(net)
     model.to(env.device)
     model.eval()
 

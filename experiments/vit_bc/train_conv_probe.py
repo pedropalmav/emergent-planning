@@ -143,8 +143,7 @@ if __name__ == "__main__":
 
     # TODO: load datasets function
     train_dataset_c = torch.load(
-        f"./data/train_data_full_{args.model_name}.pt",
-        weights_only=False,
+        f"./data/train_data_full_{args.model_name}.pt", weights_only=False
     )
     test_dataset_c = torch.load(
         f"./data/test_data_full_{args.model_name}.pt",

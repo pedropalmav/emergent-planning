@@ -1,0 +1,2 @@
+from .vit_embedding_extractor import ViTEmbeddingExtractor
+from .resnet_embedding_extractor import ResNetEmbeddingExtractor

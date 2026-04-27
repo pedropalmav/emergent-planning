@@ -6,6 +6,7 @@ test/
 hpc/
 venv/
 env/
+.venv/
 .idea/
 .ipynb_checkpoints/
 wandb
